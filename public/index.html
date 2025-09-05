@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recipe Generator - Puter + Marked</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h1>🍳 Recipe Generator</h1>
+    <form onsubmit="return false;">
+      <div class="form-group">
+        <label for="ingredients">Main Ingredients</label>
+        <input type="text" id="ingredients" placeholder="Example: nasi, telur, bawang putih, kecap manis">
+      </div>
+      <div class="form-group">
+        <label for="difficulty">Difficulty Level</label>
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="time">Cooking Duration (minute)</label>
+        <input type="number" id="time" min="1" placeholder="Example: 30">
+      </div>
+      <button id="generate-recipe" type="button">Generate Recipe</button>
+    </form>
+  </div>
+
+  <div id="recipe-card">
+    <img id="recipe-loading" src="svg/Rolling@1x-1.0s-200px-200px.svg" alt="loading..." />
+    <div id="recipe-text"></div>
+    <button id="close-recipe" class="close">Close</button>
+  </div>
+
+  <!-- Library eksternal -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://js.puter.com/v2/"></script>
+
+  <!-- Script utama -->
+  <script src="script.js"></script>
+</body>
+</html>
