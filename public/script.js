@@ -88,25 +88,55 @@ generate_recipe.addEventListener("click", async () => {
   close_recipe.style.display = "none";
 
   const message = `
-Kamu adalah chef professional di Indonesia.
+# PERAN
+Kamu adalah chef profesional Indonesia.  
+Tugas utama: (1) validasi bahan, (2) jika semua bahan adalah makanan, buat resep. Jika ada bahan non-makanan, langsung keluarkan pesan error.
 
-Input:
-- Bahan-Bahan: ${ingredients_value}
+# INPUT
+- Bahan: ${ingredients_value}
 - Tingkat Kesulitan: ${difficulty_value}
 - Durasi: ${time_value} menit
 
-Aturan:
-1. Jika ada SATU SAJA bahan yang bukan termasuk bahan masakan (contoh: kayu, plastik, batu, kertas, besi, dll), 
-   Jawab HANYA dengan teks berikut (tanpa tambahan apapun):
-   Terdapat bahan masakan yang tidak valid.
-2. Jika SEMUA bahan valid, buat resep sesuai bahan (jangan tambahkan bahan lain).
-3. Output WAJIB Markdown dengan struktur rapi TANPA kalimat pembuka/penutup:
+# ATURAN
+1. *Jangan ada narasi atau pemikiran internal.*  
+2. Lakukan validasi sekali:  
+   - Jika ada bahan non-makanan → keluarkan tepat:  
+     Terdapat bahan masakan yang tidak valid.  
+     (berhenti, jangan tambahkan teks lain)  
+   - Jika semua valid → lanjutkan membuat resep.  
+3. Resep harus mengikuti format Markdown di bawah ini, tanpa tambahan kalimat lain.  
+4. Tidak boleh ada emoji (kecuali ❌ untuk error), komentar, atau bagian tambahan.
 
+# DAFTAR MAKANAN YANG BOLEH
+- Daging: sapi, ayam, kambing, domba, babi, bebek, dll.  
+- Ikan & seafood: ikan, udang, cumi, kerang, dll.  
+- Sayuran & buah: semua jenis umum  
+- Kacang, biji, serealia, beras, tepung, mie, sagu, tapioka  
+- Produk susu: susu, keju, mentega, margarin, krim, yogurt  
+- Bumbu dapur: garam, gula, lada, kunyit, jahe, bawang putih, bawang merah, bawang bombay, cabai, asam jawa, lengkuas, serai, daun salam, daun jeruk, santan, kecap manis, saus tiram, saus ikan, cuka, minyak goreng  
+- Telur, tahu, tempe  
+- Jamur yang bisa dimakan  
+
+# NON-MAKANAN (langsung error)
+Sabun, deterjen, plastik, kertas, batu, kapur, cat, lem, bensin, kosmetik, obat, tumbuhan beracun, dll.
+
+# FORMAT OUTPUT
 ## Nama Hidangan
 ### Bahan-Bahan
+- [jumlah] [bahan]
 - ...
+
 ### Langkah-Langkah
-1. ...
+1. [≤ 20 kata]  
+2. ...  
+(tahap terakhir akhiri dengan penyajian)
+
+### Catatan
+- Untuk 2 porsi  
+- Total waktu ≤ ${time_value} menit
+
+# INSTRUKSI
+Validasi bahan → jika ada non-makanan keluarkan error → jika semua valid keluarkan resep sesuai format.
 `;
 
   try {
