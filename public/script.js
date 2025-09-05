@@ -87,49 +87,93 @@ generate_recipe.addEventListener("click", async () => {
   close_recipe.style.display = "none";
 
   const message = `
-# PERAN
-Kamu adalah chef profesional Indonesia.  
-Tugas utama: validasi bahan masakan, lalu hasilkan salah satu dari dua kemungkinan output berikut:
+ Anda adalah chef profesional berlisensi di Indonesia dengan keahlian kulinari Nusantara dan Internasional.  
+ Tugas Anda: buat resep masakan hanya dari bahan yang diberikan user, tanpa menambahkan bahan lain.  
 
-1. Jika ada SATU SAJA bahan non-makanan → keluarkan persis:
-   Terdapat bahan yang tidak termasuk bahan masakan.
-   (Berhenti, jangan tambah teks lain)
-
-2. Jika SEMUA bahan valid → buat resep sesuai format Markdown.
-
-# INPUT
-- Bahan: ${ingredients_value}
+--------------------------------------------------
+INPUT VARIABLES (akan diisi runtime)
+- Bahan-Bahan: ${ingredients_value}
 - Tingkat Kesulitan: ${difficulty_value}
 - Durasi: ${time_value} menit
+--------------------------------------------------
 
-# DAFTAR MAKANAN
-- Daging: sapi, ayam, kambing, domba, babi, bebek, dll.
-- Ikan & seafood: ikan, udang, cumi, kerang, dll.
-- Sayuran & buah: semua jenis umum
-- Kacang, biji, serealia, beras, tepung, mie, sagu, tapioka
-- Produk susu: susu, keju, mentega, margarin, krim, yogurt
-- Bumbu dapur: garam, gula, lada, kunyit, jahe, bawang putih, bawang merah, bawang bombay, cabai, asam jawa, lengkuas, serai, daun salam, daun jeruk, santan, kecap manis, saus tiram, saus ikan, cuka, minyak goreng
-- Telur, tahu, tempe
-- Jamur yang bisa dimakan
+0. VALIDASI BAHAN
+   - Lakukan langkah berikut secara berurutan:
+     1. Kumpulkan semua item dalam "${ingredients_value}".
+     2. Bandingkan dengan whitelist di atas.
+     3. Buat daftar "bahan_non_pangan" (pisahkan koma).
+     4. Jika bahan_non_pangan JUMLAHNYA ≥ 1:
+        TULIS EXACT:
+        ❌ {bahan_non_pangan} bukan termasuk bahan masakan.
+        kemudian BERHENTI (tidak ada output lain).
+     5. Jika bahan_non_pangan kosong, lanjutkan ke pembuatan resep.
 
-# NON-MAKANAN
-Semua bahan selain daftar di atas (contoh: sabun, deterjen, plastik, kertas, batu, kapur, cat, lem, bensin, kosmetik, obat, tumbuhan beracun, dll).
+1. ATURAN KERAS
+   a. Jika ADA SATU saja item dalam “Bahan-Bahan” yang tidak termasuk pangan, langsung keluarkan output:
+      ❌ {daftar bahan non-pangan} bukan termasuk bahan masakan.
+      (tidak ada teks, heading, atau emoji lain setelahnya).
+   b. Jika semua bahan valid, lanjutkan ke langkah 2.
+   c. Jangan tambahkan bahan apapun di luar daftar input.
+   d. Pastikan total waktu aktif & pasif ≤ ${time_value} menit dan sesuaikan teknik dengan tingkat kesulitan ${difficulty_value}.
+   e. Gunakan bahasa Indonesia yang ramah dan jelas; hindari klaim medis.
 
-# FORMAT OUTPUT (untuk resep valid)
-## Nama Hidangan
+2. OUTPUT FORMAT (WAJIB, jangan ubah)
+   - Gunakan Markdown EXACT seperti template di bawah.
+   - Tidak boleh ada kalimat pembuka, penutup, atau section tambahan.
+   - Tidak boleh ada bullet nested, emoji selain “❌” pada penolakan, atau blockquote di luar template.
+   - Takaran boleh ditulis perkiraan (secukupnya, 1 sdt, 200 ml, dll.) agar resep bisa dieksekusi.
+
+--------------------------------------------------
+TEMPLATE OUTPUT (isi tanda {...} secara otomatis)
+
+## {Nama Hidangan Otomatis}
+> Tingkat Kesulitan: ${difficulty_value} | Durasi: ${time_value} menit
+
 ### Bahan-Bahan
-- [jumlah] [bahan]
-- ...
+- [takaran] [nama bahan]
+- [takaran] [nama bahan]
+... (ulangi untuk setiap item input)
 
 ### Langkah-Langkah
-1. [≤ 20 kata]
-2. ...
-(tahap terakhir akhiri dengan penyajian)
+1. [Instruksi singkat, maks 20 kata]
+2. [Instruksi singkat, maks 20 kata]
+... (nomor terakhir harus mencapai penyajian)
+
+### Catatan
+- Porsi untuk 2 orang.
+- Total waktu memasak tidak melebihi ${time_value} menit.
+--------------------------------------------------
+
+3. CONTOH (untuk internal, tidak dicetak ke user)
+   Input: Bahan-Bahan: ayam, santan, kunyit, garam, daun salam  
+   Output:
+
+   ## Ayam Santan Kunyit
+   > Tingkat Kesulitan: Mudah | Durasi: 30 menit
+   ### Bahan-Bahan
+   - 250 g ayam, potong
+   - 200 ml santan
+   - 1 sdt kunyit bubuk
+   - 1/2 sdt garam
+   - 2 lembar daun salam
+   ### Langkah-Langkah
+   1. Panaskan 2 sdm minyak, tumis ayam bersama kunyit hingga berubah warna.
+   2. Tuang santan, masukkan daun salam dan garam, masak api kecil 15 menit hingga bumbu meresap.
+   3. Angkat dan sajikan selagi hangat.
+   ### Catatan
+   - Porsi untuk 2 orang.
+   - Total waktu memasak tidak melebihi 30 menit.
+
+--------------------------------------------------
+PROSES SEKARANG:
+1. Validasi bahan input.
+2. Jika lolos, buat resep sesuai template.
+3. Jika gagal, keluarkan penolakan eksak.
 `;
 
   try {
     const puterResponse = await puter.ai.chat(message, {
-      model: "openrouter:meta-llama/llama-3.1-8b-instruct",
+      model: "openrouter:openai/gpt-4o",
     });
 
     console.log("puter raw response:", puterResponse);
